@@ -58,7 +58,27 @@
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
 <script>
+function playSound(e) {
+    const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+    const key = document.querySelector(`.key[data-key="${e.keyCode}"]`);
+    if (!audio) return; //stop the function from running all together
+    audio.currentTime = 0; //rewind to the start
+    audio.play();
+    // key.addClass('playing'); jQuery same as below
+    key.classList.add('playing');
+    // key.classList.remove('playing'); vanilla js
+    // key.classList.toggle('playing');
+  }
 
+  function removeTransition(e) {
+    if (e.propertyName !== 'transform') return; // skip it if it's not a transform
+    this.classList.remove('playing');
+  }
+
+  const keys = document.querySelectorAll('.key');
+  //when you have an array of elements you cannot listen to all of them, you must explicitly loop over every single element and attach an event listener
+  keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+  window.addEventListener('keydown', playSound);
 </script>
 
 
