@@ -17,6 +17,55 @@
 <script>
 const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
+let cities = [];
+//fetch returns a promise
+// const prom = fetch(endpoint);
+// console.log(prom);
+//have to parse raw data using json method
+fetch(endpoint)
+  .then(blob => blob.json())
+  .then(data => cities = data)
+//if you want to use const instead of let for array then spread into the function or push method
+//data => cities.push(...data) (if push without spread, then it becomes an array of an array)
+
+function findMatches(wordToMatch, cities){
+  return cities.filter(place => {
+    //here we need to figure out if the city or state matches what was searched
+    //how do you put a variable into a regular expression
+    //g for global, looks in entire string, i for insensitive matches lower and uppercase
+    const regex = new RegExp(wordToMatch, 'gi');
+    return place.city.match(regex) || place.state.match(regex);
+  })
+}
+
+function numberWithCommas(x){
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function displayMatches() {
+  // console.log(this.value);
+  const matchArray = findMatches(this.value, cities);
+  console.log(matchArray);
+  const html = matchArray.map(place => {
+    //create regex to match city name and use that regex to replace word that it matches with a span of class hl and word that it matches
+    const regex = new RegExp(this.value, 'gi');
+    const cityName = place.city.replace(regex, `<span class='hl'>${this.value}</span>`)
+    const stateName = place.state.replace(regex, `<span class='hl'>${this.value}</span>`)
+    return `
+      <li>
+        <span class='name'>${cityName}, ${stateName}</span>
+        <span class='population'>${numberWithCommas(place.population)}</span>
+      </li>
+    `;
+  }).join('');
+  //above returns array of multiple items and join makes it into a large string
+  suggestions.innerHTML = html;
+}
+
+const searchInput = document.querySelector('.search');
+const suggestions = document.querySelector('.suggestions');
+
+searchInput.addEventListener('change', displayMatches);
 </script>
   </body>
 </html>
