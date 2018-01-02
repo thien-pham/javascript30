@@ -24,6 +24,7 @@
     .panels {
       min-height:100vh;
       overflow: hidden;
+      display: flex;
     }
 
     .panel {
@@ -41,6 +42,12 @@
       font-size: 20px;
       background-size:cover;
       background-position:center;
+      /* evenly distributes extra room */
+      flex: 1;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      flex-direction: column;
     }
 
 
@@ -50,10 +57,29 @@
     .panel4 { background-image:url(https://source.unsplash.com/ITjiVXcwVng/1500x1500); }
     .panel5 { background-image:url(https://source.unsplash.com/3MNzGlQM7qs/1500x1500); }
 
+    /* flex items */
     .panel > * {
       margin:0;
       width: 100%;
       transition:transform 0.5s;
+      border: 1px solid red;
+      flex: 1 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .panel > *:first-child {
+      transform: translateY(-100%);
+    }
+    .panel.open-active > *:first-child {
+      transform: translateY(0);
+    }
+    .panel > *:last-child {
+      transform: translateY(100%);
+    }
+    .panel.open-active > *:last-child {
+      transform: translateY(0);
     }
 
     .panel p {
@@ -68,6 +94,8 @@
 
     .panel.open {
       font-size:40px;
+      /* when it has a class of open, it's going to take 5x the amount of extra room as the rest of them with regular flex of 1*/
+      flex: 5;
     }
 
   </style>
@@ -102,7 +130,20 @@
   </div>
 
   <script>
-
+    const panels = document.querySelectorAll('.panel');
+    //write a function that toggles the class of open
+    function toggleOpen() {
+      this.classList.toggle('open');
+    }
+    function toggleActive(e) {
+      console.log('e.propertyName');
+      // if(e.propertyName === 'flex-grow'), in safari it uses 'flex'
+      if(e.propertyName.includes('flex')){
+        this.classList.toggle('open-active');
+      }
+    }
+    panels.forEach(panel => panel.addEventListener('click', toggleOpen));
+    panels.forEach(panel => panel.addEventListener('transitionend', toggleActive));
   </script>
 
 
